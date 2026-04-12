@@ -110,6 +110,6 @@ This submission strictly adheres to all Parameter Golf rules:
 Set required environment variables:
 
 ```bash
-export DATA_PATH="/path/to/fineweb10B_sp1024"
-export TOKENIZER_PATH="/path/to/tokenizer.model"
+DATA_PATH="/path/to/fineweb10B_sp1024"
+TOKENIZER_PATH="/path/to/tokenizer.model"
 torchrun --standalone --nproc_per_node=8 train_gpt.py
