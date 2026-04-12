@@ -1,27 +1,36 @@
-# Parameter Golf Submission: Legend 128C (Hyper-Optimized Version)
+# Parameter Golf Final Submission: Legend 128C
 
-This repository contains the final submission for the Parameter Golf challenge. The model has been meticulously optimized for the Fineweb-10B dataset under the official 10-minute training and 16MB space constraints.
+Diese Repository enthält die finale Einreichung für die Parameter Golf Challenge. Das Modell wurde gezielt für den Fineweb-10B Datensatz unter Einhaltung der offiziellen 10-Minuten-Trainingszeit und des 16MB Speicherlimits optimiert.
 
-## Technical Specifications
+## Technische Spezifikationen
 
-- **Architecture**: 8-Layer Transformer with 640 Hidden Dimension (10 Attention Heads).
-- **Specialist Core**: 128-Cluster specialist gating (Legend 128C) for high-precision token prediction.
-- **Optimization Strategy**: Muon Matrix Optimizer (LR 0.02) + Adam Optimizer for scalars/embeddings.
-- **Precision**: Training conducted in `bfloat16` to ensure numerical stability on H100 hardware.
-- **Quantization**: Mixed-bit quantization (uint5/uint6/int8) to fit within 16MB while preserving sub-1.22 BPB quality.
+- **Architektur**: 8-Layer Transformer mit 640 Hidden Dimension (10 Attention Heads).
+- **Specialist Core**: 128-Cluster Specialist Gating (Legend 128C) für hochpräzise Token-Vorhersage.
+- **Optimierung**: Muon Matrix Optimizer (LR 0.02) für Gewichtsmatrizen + Adam Optimizer für Skalare und Embeddings.
+- **Lernrate**: Warmup (100 Iterationen) und Warmdown (3500 Iterationen) bis auf Null.
+- **Quantisierung**: Mixed-bit Quantisierung (uint5/uint6/int8) zur Einhaltung des 16MB Limits bei maximaler Ergebnisqualität.
 
-## Final Results (Verified on 8x H100 Cluster)
+## Ergebnisse (Verifiziert auf 8x H100 Cluster)
 
-- **Training BPB (SWA)**: **1.2174**
-- **Quantized Roundtrip BPB**: **1.2311**
-- **Symmetry Check**: Total bits evaluated matches the reference dataset bits.
-- **Compliance**: Official 10-minute wallclock limit observed (Training finished in ~510s, total run ~602s).
+Die Ergebnisse basieren auf dem finalen Trainingslauf (siehe `training_log.txt`):
 
-## Submission Contents
+- **Training BPB (SWA)**: **1.2251** (bei Step 9200)
+- **Quantisierte BPB (Roundtrip)**: **1.2331**
+- **Trainingszeit**: ~616 Sekunden (Training + Validierung + Quantisierung).
+- **Dateigröße**: **13.00 MB** (Komprimiertes Modell + Code).
 
-1. **`train_gpt.py`**: The complete training and quantization script.
-2. **`final_model.int8.ptz`**: The final quantized and compressed model artifact (zlib-compressed).
-3. **`training_log.txt`**: Detailed execution log from the official H100 cluster run.
+## Inhalt der Einreichung
 
----
-*Optimized with ❤️ by Antigravity AI for Legend 128C.*
+1. **`train_gpt.py`**: Das vollständige Trainings- und Quantisierungs-Skript.
+2. **`final_model.int8.ptz`**: Das finale Modell-Artefakt (zlib-komprimiert).
+3. **`training_log.txt`**: Detailliertes Log des offiziellen H100 Cluster-Runs.
+
+## Anleitung zur Reproduktion
+
+1. Sicherstellen, dass die `DATA_PATH` und `TOKENIZER_PATH` Umgebungsvariablen korrekt gesetzt sind.
+2. Das Training auf einem 8x H100 System starten:
+   ```bash
+   torchrun --nproc_per_node=8 train_gpt.py
+   ```
+3. Das Skript führt nach dem Training automatisch die SWA-Gewichtung, Mixed-bit Quantisierung und eine finale Validierung durch.
+
